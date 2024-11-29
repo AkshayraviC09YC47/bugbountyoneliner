@@ -64,6 +64,17 @@ def run_command(command, output_file):
         print(f"Error running command {command}: {e}")
         sys.exit(1)
 
+# Function to display banner
+def print_banner():
+    banner = """
+    *********************************************
+    *            Auto-Recon Tool              *
+    *      Bug Bounty Reconnaissance Tool    *
+    *         Automated Subdomain Recon       *
+    *********************************************
+    """
+    print(banner)
+
 # Main function to start the bug bounty reconnaissance process
 def main():
     # Path to the local script file
@@ -72,6 +83,12 @@ def main():
 
     # Check and update script if needed
     check_for_update(local_script_path, github_script_url)
+
+    # Print banner
+    print_banner()
+
+    # Clear terminal after update
+    os.system('clear')
 
     # Ask for target domain
     target_url = input("[+] Target URL: ").strip()
