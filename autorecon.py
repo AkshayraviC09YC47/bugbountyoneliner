@@ -68,7 +68,7 @@ def main():
     # Check and update script if needed
     check_for_update(local_script_path, github_script_url)
 
-    # Ask for target URL
+    # Ask for target domain
     target_url = input("[+] Target URL: ").strip()
     
     # Extract domain from URL
@@ -94,30 +94,45 @@ def main():
         print(f"Error creating folder: {e}")
         sys.exit(1)
 
-    # Run subfinder for subdomain enumeration
+    # Run subfinder for subdomain enumeration and show results
     print("[+] Running Subfinder...")
     subfinder_command = f"subfinder -d {domain} -o {os.path.join(target_folder, 'subdomains.txt')}"
     run_command(subfinder_command, os.path.join(target_folder, 'subdomains.txt'))
 
+    # Show Subfinder results
+    with open(os.path.join(target_folder, 'subdomains.txt'), 'r') as f:
+        print("\n[+] Subfinder Results:")
+        print(f.read())
+
+    # Run httpx to filter live subdomains
+    print("[+] Running HTTPX to filter live domains...")
+    httpx_command = f"httpx -l {os.path.join(target_folder, 'subdomains.txt')} -o {os.path.join(target_folder, 'httpx_live_domains.txt')}"
+    run_command(httpx_command, os.path.join(target_folder, 'httpx_live_domains.txt'))
+
+    # Show filtered live domains
+    with open(os.path.join(target_folder, 'httpx_live_domains.txt'), 'r') as f:
+        print("\n[+] Live Domains from HTTPX:")
+        print(f.read())
+
+    # Run subzy for additional subdomains using live domains from HTTPX
+    print("[+] Running Subzy for more subdomains...")
+    subzy_command = f"subzy -l {os.path.join(target_folder, 'httpx_live_domains.txt')} -o {os.path.join(target_folder, 'subzy_results.txt')}"
+    run_command(subzy_command, os.path.join(target_folder, 'subzy_results.txt'))
+
+    # Show Subzy results
+    with open(os.path.join(target_folder, 'subzy_results.txt'), 'r') as f:
+        print("\n[+] Subzy Results:")
+        print(f.read())
+
     # Run nuclei for vulnerability scanning (exclude ssl, info, and unknown issues)
-    print("[+] Running Nuclei...")
-    nuclei_command = f"nuclei -u {target_url} -t /path/to/nuclei-templates/ -es info,unknown -o {os.path.join(target_folder, 'nuclei_results.txt')}"
+    print("[+] Running Nuclei for vulnerability scanning...")
+    nuclei_command = f"nuclei -l {os.path.join(target_folder, 'httpx_live_domains.txt')} -t /path/to/nuclei-templates/ -es info,unknown -o {os.path.join(target_folder, 'nuclei_results.txt')}"
     run_command(nuclei_command, os.path.join(target_folder, 'nuclei_results.txt'))
 
-    # Run httpx for checking headers, status codes, etc.
-    print("[+] Running HTTPX...")
-    httpx_command = f"httpx -l {os.path.join(target_folder, 'subdomains.txt')} -o {os.path.join(target_folder, 'httpx_results.txt')}"
-    run_command(httpx_command, os.path.join(target_folder, 'httpx_results.txt'))
-
-    # Run katana for web scanning
-    print("[+] Running Katana...")
-    katana_command = f"katana -u {target_url} -o {os.path.join(target_folder, 'katana_results.txt')}"
-    run_command(katana_command, os.path.join(target_folder, 'katana_results.txt'))
-
-    # Run subzy for subdomain enumeration
-    print("[+] Running Subzy...")
-    subzy_command = f"subzy -d {domain} -o {os.path.join(target_folder, 'subzy_results.txt')}"
-    run_command(subzy_command, os.path.join(target_folder, 'subzy_results.txt'))
+    # Show Nuclei results
+    with open(os.path.join(target_folder, 'nuclei_results.txt'), 'r') as f:
+        print("\n[+] Nuclei Results:")
+        print(f.read())
 
     print("[+] Bug bounty recon process completed.")
 
