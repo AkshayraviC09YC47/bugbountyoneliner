@@ -5,30 +5,6 @@ import subprocess
 import sys
 from urllib.parse import urlparse
 
-# Path to the version file
-version_file = "/home/bug-hunting/version.txt"
-
-# Function to get the current version from version.txt
-def get_current_version():
-    if os.path.exists(version_file):
-        with open(version_file, 'r') as file:
-            version = file.read().strip()
-            return version
-    else:
-        # Default version if no version file is found
-        return "1.0.0"
-
-# Function to increment the version
-def increment_version(version):
-    major, minor, patch = map(int, version.split('.'))
-    patch += 1  # Increment the patch version
-    return f"{major}.{minor}.{patch}"
-
-# Function to update the version in version.txt
-def update_version(version):
-    with open(version_file, 'w') as file:
-        file.write(version)
-
 # Function to download the raw file from GitHub
 def download_file(url, local_file_path):
     response = requests.get(url)
@@ -91,9 +67,9 @@ def run_command(command, output_file):
 def print_banner():
     banner = """
     *********************************************
-    *             Auto-Recon Tool               *
-    *      Bug Bounty Reconnaissance Tool       *
-    *         Automated Subdomain Recon         *
+    *            Auto-Recon Tool              *
+    *      Bug Bounty Reconnaissance Tool    *
+    *         Automated Subdomain Recon       *
     *********************************************
     """
     print(banner)
@@ -104,33 +80,17 @@ def main():
     local_script_path = "/home/bug-hunting/autorecon.py"
     github_script_url = "https://raw.githubusercontent.com/AkshayraviC09YC47/bugbountyoneliner/refs/heads/main/autorecon.py"
 
-    # Get current version
-    current_version = get_current_version()
-    print(f"[+] Current Version: {current_version}")
-
     # Check and update script if needed
     if check_for_update(local_script_path, github_script_url):
         print("[+] Script has been updated to the latest version.")
-
-        # Increment the version
-        new_version = increment_version(current_version)
-        print(f"[+] New Version: {new_version}")
-
-        # Update version in the version.txt file
-        update_version(new_version)
-
-        # Rename the script file based on the version
-        new_script_name = f"/home/bug-hunting/autorecon-{new_version.replace('.', '-')}.py"
-        os.rename(local_script_path, new_script_name)
-        print(f"[+] Script renamed to: {new_script_name}")
-
-        # Exit after update and notify the user to re-run the script
-        print("[+] Please re-run the script to start using the latest version.")
+        os.system('clear')
+        print("[+] Please re-run the script.")
         sys.exit(0)
 
-    os.system('clear')
-
+    # Print banner
     print_banner()
+
+    # Ask for target domain
     target_url = input("[+] Target URL: ").strip()
     
     # Extract domain from URL
