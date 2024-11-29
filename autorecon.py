@@ -28,6 +28,12 @@ def get_file_checksum(file_path):
 # Function to check if local file is up-to-date
 def check_for_update(local_file_path, remote_url):
     print("[+] Checking for updates...")
+    
+    # Check if an update check file exists (flag to check if update has been performed)
+    update_check_file = "/home/bug-hunting/.updated"
+    if os.path.exists(update_check_file):
+        print("[+] Script already updated. Skipping update check.")
+        return False
 
     # Get remote file checksum
     response = requests.get(remote_url)
@@ -41,6 +47,9 @@ def check_for_update(local_file_path, remote_url):
             if local_checksum != remote_checksum:
                 print("[!] Update available. Downloading new version...")
                 if download_file(remote_url, local_file_path):
+                    # Mark the script as updated by creating a file
+                    with open(update_check_file, "w") as f:
+                        f.write("Updated")
                     return True  # Indicating the script was updated
             else:
                 print("[+] Local file is up-to-date.")
@@ -48,6 +57,9 @@ def check_for_update(local_file_path, remote_url):
         else:
             print("[!] Local file does not exist. Downloading...")
             if download_file(remote_url, local_file_path):
+                # Mark the script as updated by creating a file
+                with open(update_check_file, "w") as f:
+                    f.write("Updated")
                 return True  # Indicating the script was downloaded
     else:
         print("[!] Error fetching remote file.")
