@@ -167,7 +167,7 @@ def main():
 
     # Run nuclei for vulnerability scanning with live results
     print("[+] Running Nuclei for vulnerability scanning...")
-    nuclei_command = f"nuclei -l {os.path.join(target_folder, 'httpx_live_domains.txt')} -t /root/nuclei-templates/ -es info,unknown -o {os.pathjoin(target_folder, 'nuclei_results.txt')}"
+    nuclei_command = f"nuclei -l {os.path.join(target_folder, 'httpx_live_domains.txt')} -t /root/nuclei-templates/ -es info,unknown -o {os.path.join(target_folder, 'nuclei_results.txt')}"
     run_command_live(nuclei_command)
 
     print("[+] Bug bounty recon process completed.")
