@@ -169,7 +169,7 @@ def main():
 
     # Run Nuclei for vulnerability scanning (exclude ssl, info, and unknown issues)
     print("[+] Running Nuclei for vulnerability scanning...")
-    nuclei_command = f"nuclei -l {os.path.join(target_folder, 'httpx_live_domains.txt')} -t /path/to/nuclei-templates/ -es info,unknown -o {os.path.join(target_folder, 'nuclei_results.txt')}"
+    nuclei_command = f"nuclei -l {os.path.join(target_folder, 'httpx_live_domains.txt')} -t /root/nuclei-templates/ -es info,unknown -o {os.path.join(target_folder, 'nuclei_results.txt')}"
     run_command(nuclei_command, os.path.join(target_folder, 'nuclei_results.txt'))
 
     # Show Nuclei results
