@@ -84,11 +84,10 @@ def main():
     # Check and update script if needed
     check_for_update(local_script_path, github_script_url)
 
-    # Print banner
-    print_banner()
-
     # Clear terminal after update
     os.system('clear')
+
+    print_banner()
 
     # Ask for target domain
     target_url = input("[+] Target URL: ").strip()
