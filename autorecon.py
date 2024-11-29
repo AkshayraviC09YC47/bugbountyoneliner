@@ -136,7 +136,17 @@ def main():
         print("\n[+] Live Domains from HTTPX:")
         print(f.read())
 
-    # Run subzy for finding vulnerable subdomain takeovers using live domains from HTTPX
+    # Run katana for crawling the live domains
+    print("[+] Running Katana for crawling live domains...")
+    katana_command = f"katana -list {os.path.join(target_folder, 'httpx_live_domains.txt')} | tee {os.path.join(target_folder, 'katana_results.txt')}"
+    run_command(katana_command, os.path.join(target_folder, 'katana_results.txt'))
+
+    # Show Katana results
+    with open(os.path.join(target_folder, 'katana_results.txt'), 'r') as f:
+        print("\n[+] Katana Results:")
+        print(f.read())
+
+    # Run subzy for finding vulnerable subdomain takeovers
     print("[+] Running Subzy for finding vulnerable subdomains...")
     subzy_command = f"subzy run --targets {os.path.join(target_folder, 'httpx_live_domains.txt')} | tee {os.path.join(target_folder, 'subzy_results.txt')}"
     run_command(subzy_command, os.path.join(target_folder, 'subzy_results.txt'))
