@@ -91,9 +91,9 @@ def run_command(command, output_file):
 def print_banner():
     banner = """
     *********************************************
-    *            Auto-Recon Tool              *
-    *      Bug Bounty Reconnaissance Tool    *
-    *         Automated Subdomain Recon       *
+    *             Auto-Recon Tool               *
+    *      Bug Bounty Reconnaissance Tool       *
+    *         Automated Subdomain Recon         *
     *********************************************
     """
     print(banner)
