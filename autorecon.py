@@ -67,9 +67,9 @@ def run_command(command, output_file):
 def print_banner():
     banner = """
     *********************************************
-    *            Auto-Recon Tool              *
-    *      Bug Bounty Reconnaissance Tool    *
-    *         Automated Subdomain Recon       *
+    *            Auto-Recon Tool                *
+    *      Bug Bounty Reconnaissance Tool       *
+    *         Automated Subdomain Recon         *
     *********************************************
     """
     print(banner)
@@ -83,7 +83,6 @@ def main():
     # Check and update script if needed
     if check_for_update(local_script_path, github_script_url):
         print("[+] Script has been updated to the latest version.")
-        os.system('clear')
         print("[+] Please re-run the script.")
         sys.exit(0)
 
