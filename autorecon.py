@@ -12,9 +12,10 @@ def download_file(url, local_file_path):
         with open(local_file_path, 'wb') as f:
             f.write(response.content)
         print(f"[+] File {local_file_path} updated successfully!")
+        return True
     else:
         print("[!] Error downloading file from GitHub.")
-        sys.exit(1)
+        return False
 
 # Function to compute the MD5 checksum of a file
 def get_file_checksum(file_path):
@@ -39,12 +40,16 @@ def check_for_update(local_file_path, remote_url):
 
             if local_checksum != remote_checksum:
                 print("[!] Update available. Downloading new version...")
-                download_file(remote_url, local_file_path)
+                if download_file(remote_url, local_file_path):
+                    print("[+] Script has been updated to the latest version. Please re-run the script.")
+                    sys.exit(0)  # Exit after updating the script
             else:
                 print("[+] Local file is up-to-date.")
         else:
             print("[!] Local file does not exist. Downloading...")
-            download_file(remote_url, local_file_path)
+            if download_file(remote_url, local_file_path):
+                print("[+] Script has been updated to the latest version. Please re-run the script.")
+                sys.exit(0)  # Exit after updating the script
     else:
         print("[!] Error fetching remote file.")
         sys.exit(1)
