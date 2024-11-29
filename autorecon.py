@@ -44,6 +44,7 @@ def check_for_update(local_file_path, remote_url):
                     return True  # Indicating the script was updated
             else:
                 print("[+] Local file is up-to-date.")
+                os.system('clear')
         else:
             print("[!] Local file does not exist. Downloading...")
             if download_file(remote_url, local_file_path):
