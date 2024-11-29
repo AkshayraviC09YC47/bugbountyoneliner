@@ -136,15 +136,16 @@ def main():
         print("\n[+] Live Domains from HTTPX:")
         print(f.read())
 
-    # Run subzy for additional subdomains using live domains from HTTPX
-    print("[+] Running Subzy for more subdomains...")
-    subzy_command = f"subzy -l {os.path.join(target_folder, 'httpx_live_domains.txt')} -o {os.path.join(target_folder, 'subzy_results.txt')}"
+    # Run subzy for finding vulnerable subdomain takeovers using live domains from HTTPX
+    print("[+] Running Subzy for finding vulnerable subdomains...")
+    subzy_command = f"subzy run --targets {os.path.join(target_folder, 'httpx_live_domains.txt')} -o {os.path.join(target_folder, 'subzy_results.txt')}"
     run_command(subzy_command, os.path.join(target_folder, 'subzy_results.txt'))
 
     # Show Subzy results
     with open(os.path.join(target_folder, 'subzy_results.txt'), 'r') as f:
         print("\n[+] Subzy Results:")
         print(f.read())
+
 
     # Run nuclei for vulnerability scanning (exclude ssl, info, and unknown issues)
     print("[+] Running Nuclei for vulnerability scanning...")
