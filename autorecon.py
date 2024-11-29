@@ -96,7 +96,11 @@ def main():
     print_banner()
 
     # Ask for target domain
-    target_url = input("[+] Target URL: ").strip()
+    try:
+        target_url = input("[+] Target URL: ").strip()
+    except KeyboardInterrupt:
+        print("\n[!] User interrupted. Exiting...")
+        sys.exit(0)  # Gracefully exit when user presses Ctrl+C
     
     # Extract domain from URL
     domain = urlparse(target_url).netloc
