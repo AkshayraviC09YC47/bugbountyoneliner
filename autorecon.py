@@ -1,7 +1,53 @@
 import os
+import hashlib
+import requests
 import subprocess
 import sys
 from urllib.parse import urlparse
+
+# Function to download the raw file from GitHub
+def download_file(url, local_file_path):
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(local_file_path, 'wb') as f:
+            f.write(response.content)
+        print(f"[+] File {local_file_path} updated successfully!")
+    else:
+        print("[!] Error downloading file from GitHub.")
+        sys.exit(1)
+
+# Function to compute the MD5 checksum of a file
+def get_file_checksum(file_path):
+    hash_md5 = hashlib.md5()
+    with open(file_path, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
+
+# Function to check if local file is up-to-date
+def check_for_update(local_file_path, remote_url):
+    print("[+] Checking for updates...")
+
+    # Get remote file checksum
+    response = requests.get(remote_url)
+    if response.status_code == 200:
+        remote_checksum = hashlib.md5(response.content).hexdigest()
+
+        # Check if the local file exists
+        if os.path.exists(local_file_path):
+            local_checksum = get_file_checksum(local_file_path)
+
+            if local_checksum != remote_checksum:
+                print("[!] Update available. Downloading new version...")
+                download_file(remote_url, local_file_path)
+            else:
+                print("[+] Local file is up-to-date.")
+        else:
+            print("[!] Local file does not exist. Downloading...")
+            download_file(remote_url, local_file_path)
+    else:
+        print("[!] Error fetching remote file.")
+        sys.exit(1)
 
 # Function to run commands and capture the output
 def run_command(command, output_file):
@@ -15,6 +61,13 @@ def run_command(command, output_file):
 
 # Main function to start the bug bounty reconnaissance process
 def main():
+    # Path to the local script file
+    local_script_path = "/home/bug-hunting/autorecon.py"
+    github_script_url = "https://raw.githubusercontent.com/AkshayraviC09YC47/bugbountyoneliner/refs/heads/main/autorecon.py"
+
+    # Check and update script if needed
+    check_for_update(local_script_path, github_script_url)
+
     # Ask for target URL
     target_url = input("[+] Target URL: ").strip()
     
