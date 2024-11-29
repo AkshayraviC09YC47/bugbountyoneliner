@@ -159,6 +159,11 @@ def main():
     subzy_command = f"subzy run --targets {os.path.join(target_folder, 'httpx_live_domains.txt')} | tee {os.path.join(target_folder, 'subzy_results.txt')}"
     run_command_live(subzy_command)
 
+    # Run dirsearch for directory and file brute-forcing with live results
+    print("[+] Running Dirsearch for directory and file brute-forcing...")
+    dirsearch_command = f"dirsearch --url-file $(pwd)/{domain}/httpx_live_domains.txt -i 200 -e conf,config,bak,backup,swp,old,db,sql,asp,aspx,aspx~,asp~,py,py~,rb,rb~,php,php~,bak,bkp,cache,cgi,conf,csv,html,inc,jar,js,json,jsp,jsp~,lock,log,rar,old,sql,sql.gz,sql.zip,sql.tar.gz,sql~,swp,swp~,tar,tar.bz2,tar.gz,txt,wadl,zip,log,xml,js,json --output $(pwd)/{domain}/dirsearch_result.txt"
+    run_command_live(dirsearch_command)
+
     # Run katana for further enumeration and show live results
     print("[+] Running Katana for enumeration...")
     katana_command = f"katana -list {os.path.join(target_folder, 'httpx_live_domains.txt')} | tee {os.path.join(target_folder, 'katana_results.txt')}"
