@@ -1,8 +1,4 @@
-import os
-import hashlib
-import requests
-import subprocess
-import sys
+import os,hashlib,requests,subprocess,sys
 from urllib.parse import urlparse
 
 # Function to download the raw file from GitHub
