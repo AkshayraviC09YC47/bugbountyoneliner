@@ -106,7 +106,11 @@ def main():
     print_banner()
 
     # Ask for target domain
-    target_url = input("[+] Target URL: ").strip()
+    try:
+        target_url = input("[+] Target URL: ").strip()
+    except KeyboardInterrupt:
+        print("\n[!] Process interrupted by user. Exiting...")
+        sys.exit(0)  # Exit cleanly when Ctrl+C is pressed
     
     # Extract domain from URL
     domain = urlparse(target_url).netloc
@@ -163,7 +167,7 @@ def main():
 
     # Run nuclei for vulnerability scanning with live results
     print("[+] Running Nuclei for vulnerability scanning...")
-    nuclei_command = f"nuclei -l {os.path.join(target_folder, 'httpx_live_domains.txt')} -t /root/nuclei-templates/ -es info,unknown -o {os.path.join(target_folder, 'nuclei_results.txt')}"
+    nuclei_command = f"nuclei -l {os.path.join(target_folder, 'httpx_live_domains.txt')} -t /root/nuclei-templates/ -es info,unknown -o {os.pathjoin(target_folder, 'nuclei_results.txt')}"
     run_command_live(nuclei_command)
 
     print("[+] Bug bounty recon process completed.")
