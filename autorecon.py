@@ -141,7 +141,6 @@ def main():
     run_command_live(subfinder_command)
 
     # Filter subdomains to keep only those belonging to the target domain
-    print("[+] Filtering subdomains...")
     filtered_subdomains = filter_subdomains(os.path.join(target_folder, 'subdomains.txt'), domain)
     
     # Save filtered subdomains back to file
