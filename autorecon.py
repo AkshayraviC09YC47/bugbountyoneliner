@@ -64,6 +64,19 @@ def run_command(command, output_file):
         print(f"Error running command {command}: {e}")
         sys.exit(1)
 
+# Function to filter subdomains based on the target domain
+def filter_subdomains(input_file, output_file, target_domain):
+    try:
+        with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
+            for line in infile:
+                subdomain = line.strip()
+                if subdomain.endswith(target_domain):
+                    outfile.write(subdomain + "\n")
+        print(f"[+] Filtered subdomains saved to {output_file}")
+    except Exception as e:
+        print(f"Error filtering subdomains: {e}")
+        sys.exit(1)
+
 # Function to display banner
 def print_banner():
     banner = """
@@ -116,17 +129,25 @@ def main():
         print(f"Error creating folder: {e}")
         sys.exit(1)
 
-    # Run subfinder for subdomain enumeration and show results
+    # Run subfinder for subdomain enumeration
     print("[+] Running Subfinder...")
-    subfinder_command = f"subfinder -d {domain} -o {os.path.join(target_folder, 'subdomains.txt')}"
-    run_command(subfinder_command, os.path.join(target_folder, 'subdomains.txt'))
+    subfinder_command = f"subfinder -d {domain} -o {os.path.join(target_folder, 'subdomains_raw.txt')}"
+    run_command(subfinder_command, os.path.join(target_folder, 'subdomains_raw.txt'))
 
-    # Show Subfinder results
+    # Filter subdomains to include only those matching the target domain
+    print("[+] Filtering subdomains...")
+    filter_subdomains(
+        input_file=os.path.join(target_folder, 'subdomains_raw.txt'),
+        output_file=os.path.join(target_folder, 'subdomains.txt'),
+        target_domain=domain
+    )
+
+    # Show filtered subdomains
     with open(os.path.join(target_folder, 'subdomains.txt'), 'r') as f:
-        print("\n[+] Subfinder Results:")
+        print("\n[+] Filtered Subdomains:")
         print(f.read())
 
-    # Run httpx to filter live subdomains
+    # Proceed with HTTPX to filter live domains
     print("[+] Running HTTPX to filter live domains...")
     httpx_command = f"httpx -l {os.path.join(target_folder, 'subdomains.txt')} -o {os.path.join(target_folder, 'httpx_live_domains.txt')}"
     run_command(httpx_command, os.path.join(target_folder, 'httpx_live_domains.txt'))
@@ -136,27 +157,17 @@ def main():
         print("\n[+] Live Domains from HTTPX:")
         print(f.read())
 
-    # Run katana for crawling the live domains
-    print("[+] Running Katana for crawling live domains...")
+    # Run Katana for crawling live domains
+    print("[+] Running Katana for crawling...")
     katana_command = f"katana -list {os.path.join(target_folder, 'httpx_live_domains.txt')} | tee {os.path.join(target_folder, 'katana_results.txt')}"
-    run_command(katana_command, os.path.join(target_folder, 'katana_results.txt'))
+    os.system(katana_command)
 
-    # Show Katana results
-    with open(os.path.join(target_folder, 'katana_results.txt'), 'r') as f:
-        print("\n[+] Katana Results:")
-        print(f.read())
-
-    # Run subzy for finding vulnerable subdomain takeovers
-    print("[+] Running Subzy for finding vulnerable subdomains...")
+    # Run Subzy for subdomain takeover vulnerability scanning
+    print("[+] Running Subzy for subdomain takeover vulnerabilities...")
     subzy_command = f"subzy run --targets {os.path.join(target_folder, 'httpx_live_domains.txt')} | tee {os.path.join(target_folder, 'subzy_results.txt')}"
-    run_command(subzy_command, os.path.join(target_folder, 'subzy_results.txt'))
+    os.system(subzy_command)
 
-    # Show Subzy results
-    with open(os.path.join(target_folder, 'subzy_results.txt'), 'r') as f:
-        print("\n[+] Subzy Results:")
-        print(f.read())
-
-    # Run nuclei for vulnerability scanning (exclude ssl, info, and unknown issues)
+    # Run Nuclei for vulnerability scanning (exclude ssl, info, and unknown issues)
     print("[+] Running Nuclei for vulnerability scanning...")
     nuclei_command = f"nuclei -l {os.path.join(target_folder, 'httpx_live_domains.txt')} -t /path/to/nuclei-templates/ -es info,unknown -o {os.path.join(target_folder, 'nuclei_results.txt')}"
     run_command(nuclei_command, os.path.join(target_folder, 'nuclei_results.txt'))
