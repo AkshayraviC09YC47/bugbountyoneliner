@@ -69,17 +69,15 @@ def run_command_live(command):
         print(f"Error running command {command}: {e}")
         sys.exit(1)
 
-# Function to merge and deduplicate files
-def merge_and_deduplicate(files, output_file):
-    unique_subdomains = set()
-    for file in files:
-        with open(file, 'r') as f:
-            for line in f:
-                unique_subdomains.add(line.strip())
-    with open(output_file, 'w') as f:
-        for subdomain in sorted(unique_subdomains):
-            f.write(f"{subdomain}\n")
-    print(f"[+] Merged and deduplicated subdomains saved to {output_file}")
+# Function to filter out subdomains that are not part of the target domain
+def filter_subdomains(subdomains_file, target_domain):
+    filtered_subdomains = []
+    with open(subdomains_file, 'r') as f:
+        for line in f:
+            subdomain = line.strip()
+            if target_domain in subdomain:
+                filtered_subdomains.append(subdomain)
+    return filtered_subdomains
 
 # Function to display banner
 def print_banner():
@@ -139,23 +137,21 @@ def main():
 
     # Run subfinder for subdomain enumeration and show results live
     print("[+] Running Subfinder...")
-    subfinder_file = os.path.join(target_folder, 'subdomains.txt')
-    subfinder_command = f"subfinder -d {domain} -o {subfinder_file}"
+    subfinder_command = f"subfinder -d {domain} -o {os.path.join(target_folder, 'subdomains.txt')}"
     run_command_live(subfinder_command)
 
-    # Run dnsx for DNS resolution and save with tee
-    print("[+] Running DNSX...")
-    dnsx_file = os.path.join(target_folder, 'dnsx_results.txt')
-    dnsx_command = f"dnsx -silent -d {domain} -w /opt/subdomains-top1mil-20000.txt | tee {dnsx_file}"
-    run_command_live(dnsx_command)
-
-    # Merge and deduplicate subfinder and dnsx results
-    merged_file = os.path.join(target_folder, 'dnsx_and_subfinder.txt')
-    merge_and_deduplicate([subfinder_file, dnsx_file], merged_file)
+    # Filter subdomains to keep only those belonging to the target domain
+    filtered_subdomains = filter_subdomains(os.path.join(target_folder, 'subdomains.txt'), domain)
+    
+    # Save filtered subdomains back to file
+    with open(os.path.join(target_folder, 'subdomains_filtered.txt'), 'w') as f:
+        for subdomain in filtered_subdomains:
+            f.write(f"{subdomain}\n")
+    print(f"[+] Filtered subdomains saved to {os.path.join(target_folder, 'subdomains_filtered.txt')}")
 
     # Run httpx to filter live subdomains and show results live
     print("[+] Running HTTPX to filter live domains...")
-    httpx_command = f"httpx -l {merged_file} -o {os.path.join(target_folder, 'httpx_live_domains.txt')}"
+    httpx_command = f"httpx -l {os.path.join(target_folder, 'subdomains_filtered.txt')} -o {os.path.join(target_folder, 'httpx_live_domains.txt')}"
     run_command_live(httpx_command)
 
     # Run subzy for additional subdomains using live domains from HTTPX and show live results
