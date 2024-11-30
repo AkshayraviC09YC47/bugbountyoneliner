@@ -154,20 +154,26 @@ def main():
     httpx_command = f"httpx -l {os.path.join(target_folder, 'subdomains_filtered.txt')} -o {os.path.join(target_folder, 'httpx_live_domains.txt')}"
     run_command_live(httpx_command)
 
-    # Run subzy for additional subdomains using live domains from HTTPX and show live results
-    print("[+] Running Subzy for more subdomains...")
-    subzy_command = f"subzy run --targets {os.path.join(target_folder, 'httpx_live_domains.txt')} | tee {os.path.join(target_folder, 'subzy_results.txt')}"
-    run_command_live(subzy_command)
+    # Run gau to fetch URLs from Wayback Machine
+    print("[+] Running GAU for fetching URLs...")
+    gau_command = f"gau {domain} | tee {os.path.join(target_folder, 'gau_results.txt')}"
+    run_command_live(gau_command)
 
-    # Run dirsearch for directory and file brute-forcing with live results
-    print("[+] Running Dirsearch for directory and file brute-forcing...")
-    dirsearch_command = f"dirsearch -q --url-file $(pwd)/{domain}/httpx_live_domains.txt -i 200 -e conf,config,bak,backup,swp,old,db,sql,asp,aspx,aspx~,asp~,py,py~,rb,rb~,php,php~,bak,bkp,cache,cgi,conf,csv,html,inc,jar,js,json,jsp,jsp~,lock,log,rar,old,sql,sql.gz,sql.zip,sql.tar.gz,sql~,swp,swp~,tar,tar.bz2,tar.gz,txt,wadl,zip,log,xml,js,json --output $(pwd)/{domain}/dirsearch_result.txt"
-    run_command_live(dirsearch_command)
-
-    # Run katana for further enumeration and show live results
+    # Run Katana for further enumeration and show live results
     print("[+] Running Katana for enumeration...")
     katana_command = f"katana -list {os.path.join(target_folder, 'httpx_live_domains.txt')} | tee {os.path.join(target_folder, 'katana_results.txt')}"
     run_command_live(katana_command)
+
+    # Combine GAU and Katana results into a single file
+    combined_file = os.path.join(target_folder, 'Gau_and_katana.txt')
+    print(f"[+] Combining GAU and Katana results into {combined_file}...")
+    with open(os.path.join(target_folder, 'gau_results.txt'), 'r') as gau_file, \
+         open(os.path.join(target_folder, 'katana_results.txt'), 'r') as katana_file, \
+         open(combined_file, 'w') as output_file:
+        combined_urls = set(gau_file.read().splitlines() + katana_file.read().splitlines())
+        sorted_urls = sorted(combined_urls)
+        output_file.write('\n'.join(sorted_urls))
+    print(f"[+] Combined and sorted results saved to {combined_file}.")
 
     # Run nuclei for vulnerability scanning with live results
     print("[+] Running Nuclei for vulnerability scanning...")
