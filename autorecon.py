@@ -161,7 +161,7 @@ def main():
 
     # Run dirsearch for directory and file brute-forcing with live results
     print("[+] Running Dirsearch for directory and file brute-forcing...")
-    dirsearch_command = f"dirsearch --url-file $(pwd)/{domain}/httpx_live_domains.txt -i 200 -e conf,config,bak,backup,swp,old,db,sql,asp,aspx,aspx~,asp~,py,py~,rb,rb~,php,php~,bak,bkp,cache,cgi,conf,csv,html,inc,jar,js,json,jsp,jsp~,lock,log,rar,old,sql,sql.gz,sql.zip,sql.tar.gz,sql~,swp,swp~,tar,tar.bz2,tar.gz,txt,wadl,zip,log,xml,js,json --output $(pwd)/{domain}/dirsearch_result.txt"
+    dirsearch_command = f"dirsearch -q --url-file $(pwd)/{domain}/httpx_live_domains.txt -i 200 -e conf,config,bak,backup,swp,old,db,sql,asp,aspx,aspx~,asp~,py,py~,rb,rb~,php,php~,bak,bkp,cache,cgi,conf,csv,html,inc,jar,js,json,jsp,jsp~,lock,log,rar,old,sql,sql.gz,sql.zip,sql.tar.gz,sql~,swp,swp~,tar,tar.bz2,tar.gz,txt,wadl,zip,log,xml,js,json --output $(pwd)/{domain}/dirsearch_result.txt"
     run_command_live(dirsearch_command)
 
     # Run katana for further enumeration and show live results
