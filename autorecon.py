@@ -1,4 +1,4 @@
-import os, hashlib, requests, subprocess, sys
+import os,hashlib,requests,subprocess,sys
 from urllib.parse import urlparse
 
 # Function to download the raw file from GitHub
@@ -165,42 +165,12 @@ def main():
     katana_command = f"katana -list {os.path.join(target_folder, 'httpx_live_domains.txt')} | tee {os.path.join(target_folder, 'katana_results.txt')}"
     run_command_live(katana_command)
 
-    # **NEW FEATURE**: Run GAU to collect URLs
-    print("[+] Running GAU to collect URLs...")
-    gau_file_path = os.path.join(target_folder, 'gau_results.txt')
-    gau_command = f"gau {domain} | tee {gau_file_path}"
-    run_command_live(gau_command)
+    # Run nuclei for vulnerability scanning with live results
+    print("[+] Running Nuclei for vulnerability scanning...")
+    nuclei_command = f"nuclei -l {os.path.join(target_folder, 'httpx_live_domains.txt')} -t /root/nuclei-templates/ -es info,unknown -o {os.path.join(target_folder, 'nuclei_results.txt')}"
+    run_command_live(nuclei_command)
 
-    # **NEW FEATURE**: Combine GAU and Katana results into one file and remove duplicates
-    print("[+] Combining GAU and Katana results...")
-    katana_file_path = os.path.join(target_folder, 'katana_results.txt')
-    combined_file_path = os.path.join(target_folder, 'Gau_and_katana.txt')
-
-    # Check if gau_results.txt exists before combining
-    gau_results = []
-    if os.path.exists(gau_file_path):
-        with open(gau_file_path, 'r') as gau_file:
-            gau_results = gau_file.readlines()
-    else:
-        print(f"[!] Warning: GAU results file {gau_file_path} not found. Proceeding with Katana results only.")
-
-    # Read Katana results
-    katana_results = []
-    if os.path.exists(katana_file_path):
-        with open(katana_file_path, 'r') as katana_file:
-            katana_results = katana_file.readlines()
-    else:
-        print(f"[!] Warning: Katana results file {katana_file_path} not found. Proceeding with GAU results only.")
-
-    # Combine and deduplicate results
-    combined_results = set(gau_results + katana_results)  # Using a set to remove duplicates
-    sorted_combined_results = sorted(combined_results)  # Sort the URLs
-
-    # Write combined results to file
-    with open(combined_file_path, 'w') as combined_file:
-        combined_file.writelines(sorted_combined_results)
-
-    print(f"[+] Combined GAU and Katana results saved to {combined_file_path}")
+    print("[+] Bug bounty recon process completed.")
 
 if __name__ == "__main__":
     main()
