@@ -1,4 +1,4 @@
-import os,hashlib,requests,subprocess,sys
+import os, hashlib, requests, subprocess, sys
 from urllib.parse import urlparse
 
 # Function to download the raw file from GitHub
@@ -136,8 +136,18 @@ def main():
     subfinder_command = f"subfinder -d {domain} -o {os.path.join(target_folder, 'subdomains.txt')}"
     run_command_live(subfinder_command)
 
+    # Check if subfinder found subdomains
+    if not os.path.exists(os.path.join(target_folder, 'subdomains.txt')) or os.path.getsize(os.path.join(target_folder, 'subdomains.txt')) == 0:
+        print("[+] Unable to find subdomains, Exiting...")
+        sys.exit(1)
+
     # Filter subdomains to keep only those belonging to the target domain
     filtered_subdomains = filter_subdomains(os.path.join(target_folder, 'subdomains.txt'), domain)
+    
+    # Check if any subdomains were found after filtering
+    if not filtered_subdomains:
+        print("[+] Unable to find any valid subdomains, Exiting...")
+        sys.exit(1)
     
     # Save filtered subdomains back to file
     with open(os.path.join(target_folder, 'subdomains_filtered.txt'), 'w') as f:
@@ -149,6 +159,11 @@ def main():
     print("[+] Running HTTPX to filter live domains...")
     httpx_command = f"httpx -l {os.path.join(target_folder, 'subdomains_filtered.txt')} -o {os.path.join(target_folder, 'httpx_live_domains.txt')}"
     run_command_live(httpx_command)
+
+    # Check if httpx found any live domains
+    if not os.path.exists(os.path.join(target_folder, 'httpx_live_domains.txt')) or os.path.getsize(os.path.join(target_folder, 'httpx_live_domains.txt')) == 0:
+        print("[+] Unable to find live domains, Exiting...")
+        sys.exit(1)
 
     # Run subzy for additional subdomains using live domains from HTTPX and show live results
     print("[+] Running Subzy for more subdomains...")
