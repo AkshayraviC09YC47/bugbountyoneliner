@@ -146,7 +146,7 @@ def main():
     # Run dnsx for DNS resolution and save with tee
     print("[+] Running DNSX...")
     dnsx_file = os.path.join(target_folder, 'dnsx_results.txt')
-    dnsx_command = f"dnsx -silent -d {domain} -w /opt/dubdomains-top1mil-20000.txt | tee {dnsx_file}"
+    dnsx_command = f"dnsx -silent -d {domain} -w /opt/subdomains-top1mil-20000.txt | tee {dnsx_file}"
     run_command_live(dnsx_command)
 
     # Merge and deduplicate subfinder and dnsx results
