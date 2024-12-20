@@ -185,6 +185,9 @@ def main():
     nuclei_command = f"nuclei -l {os.path.join(target_folder, 'httpx_live_domains.txt')} -t /root/nuclei-templates/ -es info,unknown -o {os.path.join(target_folder, 'nuclei_results.txt')}"
     run_command_live(nuclei_command)
 
+    # Run nofiy for sharing recon status via telegram
+    notify_command = f"echo 'Reconnaissance has been completed for Target: {domain}' | notify"
+    run_command_live(notify_command)
     print("[+] Bug bounty recon process completed.")
 
 if __name__ == "__main__":
