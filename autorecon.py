@@ -101,12 +101,17 @@ def main():
     # Print banner
     print_banner()
 
-    # Ask for target domain
-    try:
-        target_url = input("[+] Target URL: ").strip()
-    except KeyboardInterrupt:
-        print("\n[!] Process interrupted by user. Exiting...")
-        sys.exit(0)  # Exit cleanly when Ctrl+C is pressed
+    # Check if a URL is passed as a command-line argument
+    if len(sys.argv) > 1:
+        target_url = sys.argv[1]
+        print(f"[+] Target URL from argument: {target_url}")
+    else:
+        # Ask for target domain interactively
+        try:
+            target_url = input("[+] Target URL: ").strip()
+        except KeyboardInterrupt:
+            print("\n[!] Process interrupted by user. Exiting...")
+            sys.exit(0)  # Exit cleanly when Ctrl+C is pressed
     
     # Extract domain from URL
     domain = urlparse(target_url).netloc
