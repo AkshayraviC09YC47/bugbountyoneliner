@@ -139,6 +139,8 @@ def main():
     # Check if subfinder found subdomains
     if not os.path.exists(os.path.join(target_folder, 'subdomains.txt')) or os.path.getsize(os.path.join(target_folder, 'subdomains.txt')) == 0:
         print("[+] Unable to find subdomains, Exiting...")
+        subfinder_status=f"echo 'ERROR: Unable to find subdomains, Reconnaissance has halted for target: {domain}' | notify"
+        run_command_live(subfinder_status)
         sys.exit(1)
 
     # Filter subdomains to keep only those belonging to the target domain
@@ -147,6 +149,8 @@ def main():
     # Check if any subdomains were found after filtering
     if not filtered_subdomains:
         print("[+] Unable to find any valid subdomains, Exiting...")
+        filter_subdomain_status=f"echo 'ERROR: Unable to find any valid subdomains after filtering, Reconnaissance has halted for target: {domain}' | notify"
+        run_command_live(filter_subdomain_status)
         sys.exit(1)
     
     # Save filtered subdomains back to file
@@ -163,6 +167,8 @@ def main():
     # Check if httpx found any live domains
     if not os.path.exists(os.path.join(target_folder, 'httpx_live_domains.txt')) or os.path.getsize(os.path.join(target_folder, 'httpx_live_domains.txt')) == 0:
         print("[+] Unable to find live domains, Exiting...")
+        httpx_status = f"echo 'HTTPX ERROR: Unable to find live domains, Reconnaissance has halted for target: {domain}' | notify"
+        run_command_live(httpx_status)
         sys.exit(1)
 
     # Run subzy for additional subdomains using live domains from HTTPX and show live results
