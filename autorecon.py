@@ -139,7 +139,7 @@ def main():
     # Check if subfinder found subdomains
     if not os.path.exists(os.path.join(target_folder, 'subdomains.txt')) or os.path.getsize(os.path.join(target_folder, 'subdomains.txt')) == 0:
         print("[+] Unable to find subdomains, Exiting...")
-        subfinder_status=f"echo '**ERROR:** Unable to find subdomains for target: {domain}' | notify"
+        subfinder_status=f"echo 'ERROR: Recon Halted, Unable to find subdomains for target: {domain}' | notify"
         run_command_live(subfinder_status)
         sys.exit(1)
 
@@ -149,7 +149,7 @@ def main():
     # Check if any subdomains were found after filtering
     if not filtered_subdomains:
         print("[+] Unable to find any valid subdomains, Exiting...")
-        filter_subdomain_status=f"echo '**ERROR:** Unable to find any valid subdomains after filtering for target: {domain}' | notify"
+        filter_subdomain_status=f"echo 'ERROR: Recon Halted, Unable to find any valid subdomains after filtering for target: {domain}' | notify"
         run_command_live(filter_subdomain_status)
         sys.exit(1)
     
@@ -167,7 +167,7 @@ def main():
     # Check if httpx found any live domains
     if not os.path.exists(os.path.join(target_folder, 'httpx_live_domains.txt')) or os.path.getsize(os.path.join(target_folder, 'httpx_live_domains.txt')) == 0:
         print("[+] Unable to find live domains, Exiting...")
-        httpx_status = f"echo '**HTTPX ERROR:** Unable to find live domains for target: {domain}' | notify"
+        httpx_status = f"echo 'ERROR: Recon Halted, Unable to find live domains for target: {domain}' | notify"
         run_command_live(httpx_status)
         sys.exit(1)
 
@@ -192,7 +192,7 @@ def main():
     run_command_live(nuclei_command)
 
     # Run nofiy for sharing recon status via telegram
-    notify_command = f"echo '**Reconnaissance has been completed for Target:** {domain}' | notify"
+    notify_command = f"echo 'Reconnaissance has been completed for Target: {domain}' | notify"
     run_command_live(notify_command)
     print("[+] Bug bounty recon process completed.")
 
